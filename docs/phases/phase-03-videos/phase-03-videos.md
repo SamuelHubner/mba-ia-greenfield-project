@@ -208,7 +208,7 @@ Deliver, in `nestjs-project/`, upload de até 10GB funcional without the bytes f
 ### SI-03.7 — Expor endpoints de upload (POST /videos e sub-recurso /upload)
 
 **Route:** POST /videos · POST /videos/:urlId/upload/parts · GET /videos/:urlId/upload · POST /videos/:urlId/upload/complete · DELETE /videos/:urlId/upload
-**Test Specs:** _pending /plan-test-specs_
+**Test Specs:** see `nestjs-project/specs/videos-upload.plan.md`
 **Authorization:** Authenticated (JWT global); operações sobre `:urlId` são owner-only (não-dono → `404 VIDEO_NOT_FOUND`)
 
 **Description:** Fia o `VideosService` ao HTTP com DTOs `class-validator`, rotas REST conforme o `### API Contracts` e documentação Swagger, deixando o contrato de upload consumível pelo futuro frontend e registrado no `openapi.json`.
@@ -243,7 +243,7 @@ Deliver, in `nestjs-project/`, upload de até 10GB funcional without the bytes f
 ### SI-03.8 — Expor leitura, streaming e download do vídeo por url_id
 
 **Route:** GET /videos/:urlId · GET /videos/:urlId/stream · GET /videos/:urlId/download
-**Test Specs:** _pending /plan-test-specs_
+**Test Specs:** see `nestjs-project/specs/videos-delivery.plan.md`
 **Authorization:** Authenticated (JWT global); owner-only (não-dono → `404 VIDEO_NOT_FOUND`)
 
 **Description:** Entrega a URL única por vídeo como recurso consultável e as URLs pré-assinadas de reprodução (Range/206 servido pelo storage) e download (attachment), com TTLs por finalidade — fechando os entregáveis "streaming funcionando" e "URLs únicas geradas".
