@@ -139,6 +139,9 @@ _Subprojects in scope:_
 
 **Decision:** A (direct execFile + ffmpeg in the image)
 
+**Revisions:**
+- 2026-09-12 — Persisted metadata contract fixed (resolves plan-validate AMB-1): explicit typed columns `durationSeconds`, `width`, `height`, `videoCodec`, `sizeBytes`, all extracted by `ffprobe` in the worker; no free-form JSONB blob. Rationale: a fixed, typed column set is queryable/indexable (e.g., filtering by resolution in later phases) and gives `/plan-build` a closed persistence contract for the Data Model.
+
 ---
 
 ## TD-05: Unique Video URL Identifier Strategy
@@ -200,6 +203,9 @@ _Subprojects in scope:_
 **Recommendation:** **A (presigned GET, storage serves the bytes)** — consistent with the upload principle (API orchestrates, storage moves bytes), gets Range/206 and attachment download from S3 semantics for free, and keeps HLS as a clean future evolution rather than a phase-03 obligation.
 
 **Decision:** A (presigned GET, storage serves bytes)
+
+**Revisions:**
+- 2026-09-12 — Phase 03 access rule fixed (resolves plan-validate AMB-2): streaming and download endpoints are **owner-only** — JWT-guarded, the authenticated user must own the video; no `@Public()` opt-out in this phase. Public/unlisted access starts when Fase 04 introduces visibility and publication. Rationale: no video is exposed before the concept of 'published' exists; the Authorization Matrix of the plan is owner-only for every video endpoint.
 
 ---
 
