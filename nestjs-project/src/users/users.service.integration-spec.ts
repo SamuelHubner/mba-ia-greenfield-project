@@ -9,9 +9,17 @@ import {
 } from '../test/create-test-data-source';
 import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
-import { TestingModule } from '@nestjs/testing';
+import { Video } from '../videos/entities/video.entity';
+import { VideoUpload } from '../videos/entities/video-upload.entity';
 
-const ALL_ENTITIES = [User, Channel, RefreshToken, VerificationToken];
+const ALL_ENTITIES = [
+  User,
+  Channel,
+  RefreshToken,
+  VerificationToken,
+  Video,
+  VideoUpload,
+];
 
 describe('UsersService (integration)', () => {
   let dataSource: DataSource;

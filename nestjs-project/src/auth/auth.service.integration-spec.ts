@@ -31,8 +31,17 @@ import {
   VerificationToken,
   VerificationTokenType,
 } from './entities/verification-token.entity';
+import { Video } from '../videos/entities/video.entity';
+import { VideoUpload } from '../videos/entities/video-upload.entity';
 
-const ALL_ENTITIES = [User, Channel, RefreshToken, VerificationToken];
+const ALL_ENTITIES = [
+  User,
+  Channel,
+  RefreshToken,
+  VerificationToken,
+  Video,
+  VideoUpload,
+];
 
 async function createAuthTestModule(): Promise<TestingModule> {
   const ds = createTestDataSource(ALL_ENTITIES);
@@ -68,9 +77,10 @@ function captureConfirmationToken(authService: AuthService): Promise<string> {
     const mailServiceInstance = (authService as any).mailService;
     jest
       .spyOn(mailServiceInstance, 'sendConfirmationEmail')
-      .mockImplementationOnce(async (_e: string, _n: string, t: string) =>
-        resolve(t),
-      );
+      .mockImplementationOnce((_e: string, _n: string, t: string) => {
+        resolve(t);
+        return Promise.resolve();
+      });
   });
 }
 
@@ -231,7 +241,7 @@ describe('AuthService — confirm (integration)', () => {
 
   it('throws TokenExpiredException for an expired token', async () => {
     const capturePromise = captureConfirmationToken(authService);
-    const { id: userId } = await authService.register({
+    await authService.register({
       email: 'expired@example.com',
       password: 'password123',
     });
@@ -565,9 +575,10 @@ function capturePasswordResetToken(authService: AuthService): Promise<string> {
     const mailServiceInstance = (authService as any).mailService;
     jest
       .spyOn(mailServiceInstance, 'sendPasswordResetEmail')
-      .mockImplementationOnce(async (_e: string, _n: string, t: string) =>
-        resolve(t),
-      );
+      .mockImplementationOnce((_e: string, _n: string, t: string) => {
+        resolve(t);
+        return Promise.resolve();
+      });
   });
 }
 

@@ -7,8 +7,17 @@ import {
 } from '../../test/create-test-data-source';
 import { RefreshToken } from './refresh-token.entity';
 import { VerificationToken } from './verification-token.entity';
+import { Video } from '../../videos/entities/video.entity';
+import { VideoUpload } from '../../videos/entities/video-upload.entity';
 
-const ALL_ENTITIES = [User, Channel, RefreshToken, VerificationToken];
+const ALL_ENTITIES = [
+  User,
+  Channel,
+  RefreshToken,
+  VerificationToken,
+  Video,
+  VideoUpload,
+];
 
 describe('RefreshToken entity (integration)', () => {
   let dataSource: DataSource;

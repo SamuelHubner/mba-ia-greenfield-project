@@ -10,8 +10,17 @@ import {
   VerificationToken,
   VerificationTokenType,
 } from './verification-token.entity';
+import { Video } from '../../videos/entities/video.entity';
+import { VideoUpload } from '../../videos/entities/video-upload.entity';
 
-const ALL_ENTITIES = [User, Channel, RefreshToken, VerificationToken];
+const ALL_ENTITIES = [
+  User,
+  Channel,
+  RefreshToken,
+  VerificationToken,
+  Video,
+  VideoUpload,
+];
 
 describe('VerificationToken entity (integration)', () => {
   let dataSource: DataSource;
