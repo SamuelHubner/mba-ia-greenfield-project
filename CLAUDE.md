@@ -10,9 +10,9 @@ More info in the project overview: [docs/project-plan.md](docs/project-plan.md)
 
 This is a monorepo with two main areas:
 
-- `nestjs-project/` — Backend API (NestJS 11, TypeScript, Express). Contains modules for users, channels, videos, comments, etc.
-- `docs/` — Project documentation, architecture diagrams, and planning.
-- `next-frontend/` (Next.js) — not yet initialized
+- `nestjs-project/` — Backend API (NestJS 11, TypeScript, Express) plus the Video Worker built from the same codebase. Modules: `auth/`, `users/`, `channels/`, `videos/`, `storage/`, `video-processing/`, `worker/`, `mail/`, `common/`, `config/`, `database/`, `swagger/`.
+- `next-frontend/` — Frontend (Next.js 16, React 19). Auth, users and channels screens from Phase 02; no video UI yet (Phase 03 is backend-only).
+- `docs/` — Project documentation, architecture diagrams, decisions (`docs/decisions/`) and phase planning (`docs/phases/`).
 
 ## Architecture (C4 Container Diagram)
 
@@ -23,8 +23,17 @@ See `docs/diagrams/software-arch.mermaid` for the full diagram. Key containers:
 - **Video Worker** (FFmpeg) → consumes jobs from queue, processes videos, updates DB and storage
 - **Database** (PostgreSQL) → users, channels, videos, comments, likes
 - **Object Storage** (S3/MinIO) → video files and thumbnails
-- **Message Queue** (TBD) → video processing job queue
+- **Message Queue** (BullMQ on Redis) → `video-processing` queue carrying `process-video` jobs
 - **Email Service** (SMTP) → account confirmation and password recovery
+
+## Video Pipeline (Phase 03)
+
+Implemented in `nestjs-project/`; details, endpoints and env vars are in [nestjs-project/CLAUDE.md](nestjs-project/CLAUDE.md) → "Videos Module".
+
+- **Upload never passes through the API.** `POST /videos` registers the video as `draft` in the caller's channel and opens an S3 multipart upload; the client PUTs 64 MiB parts straight to MinIO/S3 through presigned URLs (`POST /videos/:urlId/upload/parts`) and finalizes with `POST /videos/:urlId/upload/complete`. Cap: 10 GiB, extension allowlist `mp4,webm,mov,mkv,avi`.
+- **Processing is asynchronous.** Completing the upload moves the video to `processing` and enqueues a `process-video` job (BullMQ, Redis). The `video-worker` container (same image, `src/worker.ts`) runs `ffprobe`/`ffmpeg` against a presigned URL, stores duration, width, height, codec, size and `videos/{id}/thumbnail.jpg`, and sets `ready`, or `error` with a cause after 3 attempts.
+- **Delivery is owner-only in this phase.** `GET /videos/:urlId` (11-char base62 public id), `/stream` and `/download` return short-lived presigned GET URLs served by the storage (Range/206 for streaming, `attachment` disposition for download). Public visibility arrives with Phase 04.
+- **Status cycle:** `draft → processing → ready | error`, persisted in `videos.status` with `processing_error` on failure.
 
 ## Docker Networking
 
