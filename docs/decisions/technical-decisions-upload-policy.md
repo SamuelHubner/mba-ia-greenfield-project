@@ -176,6 +176,9 @@ _Subprojects in scope:_
 **Decision:** A (bucket lifecycle `AbortIncompleteMultipartUpload` after 1 day + 24 h upload-session deadline on the draft)
 **Libraries:** @aws-sdk/client-s3
 
+**Revisions:**
+- 2026-09-15 — Local MinIO limitation found during `/implement` SI-03.3: the community image (`quay.io/minio/minio` RELEASE.2025-09-07) rejects a lifecycle rule whose only action is `AbortIncompleteMultipartUpload` (`InvalidArgument`) and silently drops that element when it is combined with `Expiration`. Decision A stands for real S3 (the rule is applied at bootstrap); on storages that reject it `StorageService.ensureBucket` logs a warning, exposes `lifecycleRuleApplied = false` and the API still boots — abandoned parts in dev are then covered only by the 24 h session deadline plus the explicit/lazy abort. Option B (BullMQ repeatable sweeper) is registered as a separate follow-up task, not part of Phase 03.
+
 ---
 
 ## TD-06: Accepted Video Formats at Initiation
