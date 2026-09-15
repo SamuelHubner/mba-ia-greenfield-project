@@ -31,8 +31,17 @@ import {
   VerificationToken,
   VerificationTokenType,
 } from './entities/verification-token.entity';
+import { Video } from '../videos/entities/video.entity';
+import { VideoUpload } from '../videos/entities/video-upload.entity';
 
-const ALL_ENTITIES = [User, Channel, RefreshToken, VerificationToken];
+const ALL_ENTITIES = [
+  User,
+  Channel,
+  RefreshToken,
+  VerificationToken,
+  Video,
+  VideoUpload,
+];
 
 async function createAuthTestModule(): Promise<TestingModule> {
   const ds = createTestDataSource(ALL_ENTITIES);
