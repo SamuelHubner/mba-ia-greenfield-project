@@ -8,8 +8,17 @@ import {
 import { User } from '../users/entities/user.entity';
 import { ChannelsService } from './channels.service';
 import { Channel } from './entities/channel.entity';
+import { Video } from '../videos/entities/video.entity';
+import { VideoUpload } from '../videos/entities/video-upload.entity';
 
-const ALL_ENTITIES = [User, Channel, RefreshToken, VerificationToken];
+const ALL_ENTITIES = [
+  User,
+  Channel,
+  RefreshToken,
+  VerificationToken,
+  Video,
+  VideoUpload,
+];
 
 describe('ChannelsService (integration)', () => {
   let dataSource: DataSource;
@@ -42,6 +51,21 @@ describe('ChannelsService (integration)', () => {
       }),
     );
   }
+
+  describe('findByUserId', () => {
+    it('returns the channel owned by the user, or null when there is none', async () => {
+      const owner = await createUser();
+      const other = await createUser();
+      const created = await channelsService.createChannel(
+        owner.id,
+        owner.email,
+      );
+
+      const found = await channelsService.findByUserId(owner.id);
+      expect(found?.id).toBe(created.id);
+      expect(await channelsService.findByUserId(other.id)).toBeNull();
+    });
+  });
 
   describe('createChannel', () => {
     it('persists a channel derived from email', async () => {
